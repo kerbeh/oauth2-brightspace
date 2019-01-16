@@ -24,12 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "League\\OAuth2\\Client\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "League\\OAuth2\\Client\\Test\\": "test/src/"
+            "Kerbeh\\OAuth2\\Client\\": "src/"
         }
     }
 }
