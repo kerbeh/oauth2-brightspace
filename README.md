@@ -9,7 +9,7 @@ This package provides Brightspace OAuth 2.0 support for the PHP League's [OAuth 
 To install, use composer:
 
 ```
-composer require league/oauth2-github
+composer require kerbeh/oauth2-brightspace
 ```
 
 ## Usage
