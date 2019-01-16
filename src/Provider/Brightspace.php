@@ -1,4 +1,5 @@
 <?php
+
 namespace Kerbeh\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Provider\AbstractProvider;
@@ -6,6 +7,7 @@ use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 
 class Brightspace extends AbstractProvider
 {
+
     use BearerAuthorizationTrait;
 
     /**
@@ -35,12 +37,13 @@ class Brightspace extends AbstractProvider
     {
         return 'https://auth.brightspace.com/oauth2/auth';
     }
+
     /**
      * Get access token url to retrieve token
      *
      * @return string
      */
-    public function getBaseAccessTokenUrl()
+    public function getBaseAccessTokenUrl(array $params)
     {
         return 'https://auth.brightspace.com/core/connect/token';
     }
@@ -56,6 +59,7 @@ class Brightspace extends AbstractProvider
             'domain',
         ];
     }
+
     /**
      * Verifies that all required options have been passed.
      *
@@ -95,6 +99,7 @@ class Brightspace extends AbstractProvider
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
+
         return $this->apiDomain . '/user/lp/' . $this->apiVersion["lp"] . '/users/whoami';
     }
 
