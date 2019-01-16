@@ -86,4 +86,48 @@ class Brightspace extends AbstractProvider
         return ['core:*:*'];
     }
 
+    /**
+     * Get provider url to fetch user details
+     *
+     * @param  AccessToken $token
+     *
+     * @return string
+     */
+    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    {
+        return $this->apiDomain . '/user/lp/' . $this->apiVersion["lp"] . '/users/whoami';
+    }
+
+    /**
+     * Generate a user object from a successful user details request.
+     *
+     * @param array $response
+     * @param AccessToken $token
+     * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
+     */
+    protected function createResourceOwner(array $response, AccessToken $token)
+    {
+        $user = new BrightspaceResourceOwner($response);
+        return $user->setDomain($this->domain);
+    }
+
+    /**
+     * Check a provider response for errors.
+     *
+     * @link   https://developer.github.com/v3/#client-errors
+     * @link   https://developer.github.com/v3/oauth/#common-errors-for-the-access-token-request
+     * @throws IdentityProviderException
+     * @param  ResponseInterface $response
+     * @param  array $data Parsed response data
+     * @return void
+     */
+    protected function checkResponse(ResponseInterface $response, $data)
+    {
+        if ($response->getStatusCode() >= 400) {
+            throw BrightspaceIdentityProviderException::clientException($response, $data);
+        } elseif (isset($data['error'])) {
+            throw BrightspaceIdentityProviderException::oauthException($response, $data);
+        }
+    }
+
 }
