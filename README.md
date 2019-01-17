@@ -1,5 +1,5 @@
 # Github Provider for OAuth 2.0 Client
-[![Latest Version](https://img.shields.io/github/release/thephpleague/oauth2-github.svg?style=flat-square)](https://github.com/kerbeh/oauth-brightspace/releases)
+[![Latest Version](https://img.shields.io/github/release-pre/kerbeh/oauth2-brightspace.svg?style=flat-square)](https://github.com/kerbeh/oauth-brightspace/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 
 This package provides Brightspace OAuth 2.0 support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client).
