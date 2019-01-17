@@ -19,10 +19,15 @@ Usage is the same as The League's OAuth client, using `TODO\OAuth2\Client\Provid
 ### Authorization Code Flow
 
 ```php
-$provider = new League\OAuth2\Client\Provider\Github([
+$provider = new Kerbeh\OAuth2\Client\Provider\Brightsapce([
     'clientId'          => '{brightspace-client-id}',
     'clientSecret'      => '{brightspace-client-secret}',
     'redirectUri'       => 'https://example.com/callback-url',
+    'domain' => 'https://example.com',
+    'apiVersion' => [
+                "le_version" => "1.26",
+                "lp_version" => "1.18"
+            ]
 ]);
 
 if (!isset($_GET['code'])) {
