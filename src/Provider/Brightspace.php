@@ -3,20 +3,34 @@
 namespace Kerbeh\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Provider\AbstractProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
+use Psr\Http\Message\ResponseInterface;
 
 class Brightspace extends AbstractProvider
 {
 
     use BearerAuthorizationTrait;
 
+    const SCOPE_SEPARATOR = ' ';
+
     /**
+     * Domain
+     *
      * @var string
      */
     private $domain;
 
+    /**
+     * apiVersion
+     * @var array
+     */
+    private $apiVersion;
+
     public function __construct(array $options = [])
     {
+
         $this->assertRequiredOptions($options);
         $possible = $this->getConfigurableOptions();
         $configured = array_intersect_key($options, array_flip($possible));
@@ -26,6 +40,18 @@ class Brightspace extends AbstractProvider
         // Remove all options that are only used locally
         $options = array_diff_key($options, $configured);
         parent::__construct($options);
+    }
+
+    /**
+     * Returns all options that can be configured.
+     *
+     * @return array
+     */
+    protected function getConfigurableOptions()
+    {
+        return array_merge($this->getRequiredOptions(), [
+            'apiVersion',
+        ]);
     }
 
     /**
@@ -57,6 +83,7 @@ class Brightspace extends AbstractProvider
     {
         return [
             'domain',
+            'apiVersion',
         ];
     }
 
@@ -90,17 +117,9 @@ class Brightspace extends AbstractProvider
         return ['core:*:*'];
     }
 
-    /**
-     * Get provider url to fetch user details
-     *
-     * @param  AccessToken $token
-     *
-     * @return string
-     */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-
-        return $this->apiDomain . '/user/lp/' . $this->apiVersion["lp"] . '/users/whoami';
+        return $this->domain . '/user/lp/' . $this->apiVersion["lp"] . '/users/whoami';
     }
 
     /**
