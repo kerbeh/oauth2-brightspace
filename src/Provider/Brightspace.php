@@ -2,8 +2,8 @@
 
 namespace Kerbeh\OAuth2\Client\Provider;
 
+use Kerbeh\OAuth2\Client\Provider\Exception\BrightspaceIdentityProviderException;
 use League\OAuth2\Client\Provider\AbstractProvider;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
@@ -14,6 +14,7 @@ class Brightspace extends AbstractProvider
     use BearerAuthorizationTrait;
 
     const SCOPE_SEPARATOR = ' ';
+    const API_PATH = '/d2l/api';
 
     /**
      * Domain
@@ -26,20 +27,28 @@ class Brightspace extends AbstractProvider
      * apiVersion
      * @var array
      */
-    private $apiVersion;
+    protected $apiVersion;
 
-    public function __construct(array $options = [])
+    public function __construct(array $options = [], array $collaborators = [])
     {
 
         $this->assertRequiredOptions($options);
         $possible = $this->getConfigurableOptions();
+
         $configured = array_intersect_key($options, array_flip($possible));
+
         foreach ($configured as $key => $value) {
+
             $this->$key = $value;
         }
         // Remove all options that are only used locally
         $options = array_diff_key($options, $configured);
-        parent::__construct($options);
+
+        //Set the apiVersions array
+        if (empty($options['apiVersion'])) {
+            $options['apiVersion'] = $this->apiVersion;
+        }
+        parent::__construct($options, $collaborators);
     }
 
     /**
@@ -119,7 +128,8 @@ class Brightspace extends AbstractProvider
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->domain . '/user/lp/' . $this->apiVersion["lp"] . '/users/whoami';
+
+        return $this->domain . $this::API_PATH . '/lp/' . $this->apiVersion["lp_version"] . '/users/whoami';
     }
 
     /**
@@ -132,18 +142,16 @@ class Brightspace extends AbstractProvider
     protected function createResourceOwner(array $response, AccessToken $token)
     {
         $user = new BrightspaceResourceOwner($response);
-        return $user->setDomain($this->domain);
+        return $user;
     }
 
     /**
-     * Check a provider response for errors.
+     * Throws an exception for brightspace client or oauth exceptions
      *
-     * @link   https://developer.github.com/v3/#client-errors
-     * @link   https://developer.github.com/v3/oauth/#common-errors-for-the-access-token-request
-     * @throws IdentityProviderException
-     * @param  ResponseInterface $response
-     * @param  array $data Parsed response data
-     * @return void
+     * @link https://docs.valence.desire2learn.com/basic/apicall.html?highlight=error#disposition-and-error-handling interpret the disposition of api errors
+     * @param ResponseInterface $response
+     * @param array $data
+     * @throws BrightspaceIdentityProviderException
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
