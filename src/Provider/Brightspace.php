@@ -3,6 +3,7 @@
 namespace Kerbeh\OAuth2\Client\Provider;
 
 use Kerbeh\OAuth2\Client\Provider\Exception\BrightspaceIdentityProviderException;
+use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
@@ -14,7 +15,8 @@ class Brightspace extends AbstractProvider
     use BearerAuthorizationTrait;
 
     const SCOPE_SEPARATOR = ' ';
-    const API_PATH = '/d2l/api';
+
+    protected $apiPath = '/d2l/api';
 
     /**
      * Domain
@@ -31,7 +33,7 @@ class Brightspace extends AbstractProvider
 
     public function __construct(array $options = [], array $collaborators = [])
     {
-
+        $collaborators['optionProvider'] = new HttpBasicAuthOptionProvider();
         $this->assertRequiredOptions($options);
         $possible = $this->getConfigurableOptions();
 
@@ -49,6 +51,21 @@ class Brightspace extends AbstractProvider
             $options['apiVersion'] = $this->apiVersion;
         }
         parent::__construct($options, $collaborators);
+    }
+
+    /**
+     * Get api domain
+     *
+     * @return String
+     */
+    public function getDomain()
+    {
+        return $this->domain;
+    }
+
+    public function getApiPath()
+    {
+        return $this->apiPath;
     }
 
     /**
@@ -129,7 +146,7 @@ class Brightspace extends AbstractProvider
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
 
-        return $this->domain . $this::API_PATH . '/lp/' . $this->apiVersion["lp_version"] . '/users/whoami';
+        return $this->domain . $this->apiPath . '/lp/' . $this->apiVersion["lp_version"] . '/users/whoami';
     }
 
     /**

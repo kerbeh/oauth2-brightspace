@@ -1,4 +1,4 @@
-# Github Provider for OAuth 2.0 Client
+# Brightspace LMS Provider for OAuth 2.0 Client
 [![Latest Version](https://img.shields.io/github/release-pre/kerbeh/oauth2-brightspace.svg?style=flat-square)](https://github.com/kerbeh/oauth-brightspace/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 
@@ -25,8 +25,8 @@ $provider = new Kerbeh\OAuth2\Client\Provider\Brightsapce([
     'redirectUri'       => 'https://example.com/callback-url',
     'domain' => 'https://example.com',
     'apiVersion' => [
-                "le_version" => "1.26",
-                "lp_version" => "1.18"
+                "le_version" => "{le-latest-supported-version}",
+                "lp_version" => "{lp-latest-supported-version}"
             ]
 ]);
 
