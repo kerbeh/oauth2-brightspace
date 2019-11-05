@@ -15,6 +15,8 @@ class Brightspace extends AbstractProvider
     use BearerAuthorizationTrait;
 
     const SCOPE_SEPARATOR = ' ';
+    const AUTH_URL = 'https://auth.brightspace.com/oauth2/auth';
+    const TOKEN_URL = 'https://auth.brightspace.com/core/connect/token';
 
     protected $apiPath = '/d2l/api';
 
@@ -23,14 +25,22 @@ class Brightspace extends AbstractProvider
      *
      * @var string
      */
-    private $domain;
+    protected $domain;
 
     /**
-     * apiVersion
+     * The version number of the api
+     *
      * @var array
      */
     protected $apiVersion;
 
+    /**
+     * Constructor that takes the options and configurations
+     * required by the Oauth Client
+     *
+     * @param array $options       Array of oauth client options i.e api version
+     * @param array $collaborators Array of oauth Collaborators
+     */
     public function __construct(array $options = [], array $collaborators = [])
     {
         $collaborators['optionProvider'] = new HttpBasicAuthOptionProvider();
@@ -63,6 +73,11 @@ class Brightspace extends AbstractProvider
         return $this->domain;
     }
 
+    /**
+     * Get the path to the api
+     *
+     * @return void
+     */
     public function getApiPath()
     {
         return $this->apiPath;
@@ -75,9 +90,12 @@ class Brightspace extends AbstractProvider
      */
     protected function getConfigurableOptions()
     {
-        return array_merge($this->getRequiredOptions(), [
-            'apiVersion',
-        ]);
+        return array_merge(
+            $this->getRequiredOptions(),
+            [
+                'apiVersion',
+            ]
+        );
     }
 
     /**
@@ -87,7 +105,7 @@ class Brightspace extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return 'https://auth.brightspace.com/oauth2/auth';
+        return $this::AUTH_URL;
     }
 
     /**
@@ -95,9 +113,9 @@ class Brightspace extends AbstractProvider
      *
      * @return string
      */
-    public function getBaseAccessTokenUrl(array $params)
+    public function getBaseAccessTokenUrl()
     {
-        return 'https://auth.brightspace.com/core/connect/token';
+        return $this::TOKEN_URL;
     }
 
     /**
@@ -116,9 +134,10 @@ class Brightspace extends AbstractProvider
     /**
      * Verifies that all required options have been passed.
      *
-     * @param  array $options
-     * @return void
+     * @param array $options Array of provided options
+     *
      * @throws Exception
+     * @return void
      */
     protected function assertRequiredOptions(array $options)
     {
@@ -143,20 +162,26 @@ class Brightspace extends AbstractProvider
         return ['core:*:*'];
     }
 
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    /**
+     * Get the qualified domain for the who am i API call.
+     *
+     * @return string
+     */
+    public function getResourceOwnerDetailsUrl()
     {
-
         return $this->domain . $this->apiPath . '/lp/' . $this->apiVersion["lp_version"] . '/users/whoami';
     }
 
     /**
      * Generate a user object from a successful user details request.
      *
-     * @param array $response
-     * @param AccessToken $token
+     * @param array $response Array Brightsapce of who am i data
+     *
+     * @see https://docs.valence.desire2learn.com/res/user.html#User.WhoAmIUser
+     *
      * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
      */
-    protected function createResourceOwner(array $response, AccessToken $token)
+    public function createResourceOwner(array $response)
     {
         $user = new BrightspaceResourceOwner($response);
         return $user;
@@ -165,18 +190,29 @@ class Brightspace extends AbstractProvider
     /**
      * Throws an exception for brightspace client or oauth exceptions
      *
-     * @link https://docs.valence.desire2learn.com/basic/apicall.html?highlight=error#disposition-and-error-handling interpret the disposition of api errors
-     * @param ResponseInterface $response
-     * @param array $data
+     * @param ResponseInterface $response HTTP response from the auth request
+     * @param array             $data     The reponse body
+     *                                    with Brightspace error information
+     *
+     * @link https://docs.valence.desire2learn.com/basic/apicall.html?highlight=error#disposition-and-error-handling
+     * interpret the disposition of api errors
+     *
      * @throws BrightspaceIdentityProviderException
+     *
+     * @return void;
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
         if ($response->getStatusCode() >= 400) {
-            throw BrightspaceIdentityProviderException::clientException($response, $data);
+            throw BrightspaceIdentityProviderException::clientException(
+                $response,
+                $data
+            );
         } elseif (isset($data['error'])) {
-            throw BrightspaceIdentityProviderException::oauthException($response, $data);
+            throw BrightspaceIdentityProviderException::oauthException(
+                $response,
+                $data
+            );
         }
     }
-
 }

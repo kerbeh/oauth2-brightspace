@@ -117,5 +117,4 @@ class BrightspaceResourceOwner implements ResourceOwnerInterface
     {
         return $this->response;
     }
-
 }
