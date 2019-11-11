@@ -113,7 +113,7 @@ class Brightspace extends AbstractProvider
      *
      * @return string
      */
-    public function getBaseAccessTokenUrl()
+    public function getBaseAccessTokenUrl(array $params)
     {
         return $this::TOKEN_URL;
     }
@@ -163,13 +163,16 @@ class Brightspace extends AbstractProvider
     }
 
     /**
-     * Get the qualified domain for the who am i API call.
+     * Get the fqd for the who am i API call.
      *
-     * @return string
+     * @param AccessToken $token
+     *
+     * @return String
      */
-    public function getResourceOwnerDetailsUrl()
+    public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->domain . $this->apiPath . '/lp/' . $this->apiVersion["lp_version"] . '/users/whoami';
+
+        return 'https://' . $this->domain . $this->apiPath . '/lp/' . $this->apiVersion["lp_version"] . '/users/whoami';
     }
 
     /**
