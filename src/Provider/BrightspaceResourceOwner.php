@@ -59,9 +59,9 @@ class BrightspaceResourceOwner implements ResourceOwnerInterface
 
         $this->identifier = (!empty($response["Identifier"])) ? $response["Identifier"] : null;
         $this->firstName = (!empty($response["FirstName"])) ? $response["FirstName"] : null;
-        $this->lirstName = (!empty($response["LastName"])) ? $response["LastName"] : null;
+        $this->lastName = (!empty($response["LastName"])) ? $response["LastName"] : null;
         $this->uniqueName = (!empty($response["UniqueName"])) ? $response["UniqueName"] : null;
-        $this->ProfileIdentifier = (!empty($response["ProfileIdentifier"])) ? $response["ProfileIdentifier"] : null;
+        $this->profileIdentifier = (!empty($response["ProfileIdentifier"])) ? $response["ProfileIdentifier"] : null;
     }
 
     /**
