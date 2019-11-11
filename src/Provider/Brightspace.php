@@ -184,7 +184,7 @@ class Brightspace extends AbstractProvider
      *
      * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
      */
-    public function createResourceOwner(array $response)
+    public function createResourceOwner(array $response, AccessToken $token)
     {
         $user = new BrightspaceResourceOwner($response);
         return $user;
